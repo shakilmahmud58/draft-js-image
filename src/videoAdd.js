@@ -20,7 +20,8 @@ export default class VideoAdd extends Component {
       console.log(res.data);
       //onInsertImage(res.data);
       onChange(this.props.modifier(editorState, { 
-        src: res.data}));
+        src: "https://samadhan-development.s3.ca-central-1.amazonaws.com/Shakil/1691813058_09233456-S.mp4?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA5D6CSLLDWISIZBCD%2F20230812%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20230812T040425Z&X-Amz-SignedHeaders=host&X-Amz-Expires=1200&X-Amz-Signature="
+      }));
     })
     
   };

@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import { EditorState, convertToRaw, convertFromRaw, AtomicBlockUtils, ContentBlock, genKey, convertFromHTML, ContentState, Modifier, Entity } from "draft-js";
+import { EditorState, convertToRaw, convertFromRaw, AtomicBlockUtils, ContentBlock, genKey, convertFromHTML, ContentState, Modifier, Entity, RichUtils } from "draft-js";
 import Editor, { composeDecorators } from "draft-js-plugins-editor";
 import createMentionPlugin, {
   defaultSuggestionsFilter,
@@ -204,39 +204,25 @@ export default class SimpleMentionEditor extends Component {
     });
   };
   handleDoc=(url)=>{
-     console.log(url);
-    const { editorState } = this.state;
-     const linkData = {
-      url: url,
-      target: '_blank',
-    };
-    const selectionState = editorState.getSelection();
-
-    const html ='<a>'+url+'</a>';
-    
-     //const contentState = stateFromHTML(html);
-    const contentB = convertFromHTML(html);
-    // const contentState = ContentState.createWithBlockArray(contentBlocks);
+    const {editorState} =this.state;
     const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity("LINK", "MUTABLE", {url:html});
+    const selectionState =editorState.getSelection();
+    const contentStateWithEntity = contentState.createEntity('LINK',"IMMUTABLE",{url:"www.google.com"});
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newContentState = Modifier.applyEntity(contentStateWithEntity, selectionState, entityKey);
-    //const newEditorState = EditorState.createWithContent(newContentState);
-    const newEditorState = EditorState.push(
-      editorState,
-      newContentState,
-      'apply-entity'
+    const contentStateWithLink = Modifier.applyEntity(
+      contentStateWithEntity,
+      selectionState,
+      entityKey,
     );
-
-    console.log(newEditorState)
-    
-    //const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
-    //const contentStates = editorState.getCurrentContent();
-  //console.log(contentStateWithLink);
-    this.setState({
-      editorState: newEditorState,
-      isDocPopupOpen: false,
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithLink,
     });
+    this.setState({
+      editorState:newEditorState,
+      isDocPopupOpen:false
+    });
+    console.log(contentState);
+    console.log(newEditorState);
 
   }
   toggleImagePopup = () => {
@@ -347,7 +333,7 @@ export default class SimpleMentionEditor extends Component {
             )}
           </Toolbar>
         </div>
-        <div className="editor" onClick={this.focus}>
+        <div className="editor">
           <Editor
             editorState={this.state.editorState}
             onChange={this.onChange}
